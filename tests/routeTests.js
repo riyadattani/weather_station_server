@@ -10,6 +10,8 @@ const app = require('../app.js');
 
 const agent = request.agent(app);
 
+const WeatherRecord = require('../models/weatherDataModel');
+
 describe('Testing "/" Route', () => {
   it('response status should be 200', (done) => {
     agent.get('/')
@@ -72,7 +74,7 @@ describe('Testing the api route', () => {
       });
   });
 
-  xit('saves the data in the database for a legit input', (done) => {
+  it('saves the data in the database for a legit input', (done) => {
     agent.post('/api/data')
       .send({
         temperature: 32,
@@ -84,10 +86,12 @@ describe('Testing the api route', () => {
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
-        // if (err) return done(err);
-        // res.body.mongoResponse.errors.temperature.message
-        //   .should.equal('Cast to Number failed for value "a string" at path "temperature"');
-        done();
+        const id = res.body.record._id;
+
+        WeatherRecord.findById(id, (err, weatherRecord) => {
+          weatherRecord.temperature.should.equal(32)
+          done();
+        });
       });
   });
 
