@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
-  res.send('Hello from PlaceHolder. Deployed to Heroku from Travis.');
+  res.send('Hello from PlaceHolder. Deployed to Heroku from Travis. After a pull request.');
 });
 
 app.server = app.listen(port, () => {
