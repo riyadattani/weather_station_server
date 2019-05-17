@@ -6,10 +6,10 @@ const app = express();
 
 if (process.env.ENV === 'Test') {
   console.log('This is a test');
-  const db = mongoose.connect('mongodb://localhost/weather-data-test');
+  mongoose.connect('mongodb://localhost/weather-data-test');
 } else {
   console.log('This is 4 real');
-  const db = mongoose.connect('mongodb://localhost/weather-data-dev');
+  mongoose.connect('mongodb://localhost/weather-data-dev');
 }
 
 const WeatherRecord = require('./models/weatherDataModel');
@@ -24,13 +24,19 @@ app.get('/', (req, res) => {
 
 app.post('/api/data', (req, res) => {
   const weatherRecord = new WeatherRecord(req.body);
-  // weatherRecord.save((err) => {
-  //   res.send({
-  //     message: 'Record saved',
-  //     record: weatherRecord,
-  //   });
-  // });
-  res.send({ message: 'Record saved'})
+  weatherRecord.save((err) => {
+    if (err) {
+      // console.log(err.errors);
+      res.send({
+        message: 'Record was not saved',
+      });
+    } else {
+      res.send({
+        message: 'Record saved',
+        record: weatherRecord,
+      });
+    }
+  });
 });
 
 

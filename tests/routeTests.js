@@ -38,6 +38,23 @@ describe('Testing the api route', () => {
       });
   });
 
+  it("returns a helpful message if it couldn't save", (done) => {
+    agent.post('/api/data')
+      .send({
+        temperature: 'a string',
+        humidity: 'another string',
+      })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        // if (err) return done(err);
+        res.status.should.equal(200);
+        res.body.message.should.equal('Record was not saved');
+        done();
+      });
+  });
+
   after((done) => {
     mongoose.connection.close();
     app.server.close(done());
