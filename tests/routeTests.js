@@ -72,6 +72,26 @@ describe('Testing the api route', () => {
       });
   });
 
+  xit('saves the data in the database for a legit input', (done) => {
+    agent.post('/api/data')
+      .send({
+        temperature: 32,
+        humidity: 67,
+        pressure: 100,
+        date: 1560643200000 // = 2019/5/16
+      })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        // if (err) return done(err);
+        // res.body.mongoResponse.errors.temperature.message
+        //   .should.equal('Cast to Number failed for value "a string" at path "temperature"');
+        done();
+      });
+  });
+
+
   after((done) => {
     mongoose.connection.close();
     app.server.close(done());
