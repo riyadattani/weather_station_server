@@ -1,6 +1,10 @@
 const should = require('should');
-const sinon = require('sinon');
+// const sinon = require('sinon');
 const request = require('supertest');
+const mongoose = require('mongoose');
+
+process.env.ENV = 'Test';
+
 const app = require('../app.js');
 
 const agent = request.agent(app);
@@ -20,21 +24,22 @@ describe('Testing "/" Route', () => {
 });
 
 describe('Testing the api route', () => {
-  it('responds with a JASON X', (done) => {
-    request(app).post('/api/data')
-      .send({ data: { temperature: 9000 } })
+  it('returns a confirmation message', (done) => {
+    agent.post('/api/data')
+      .send({ temperature: 20 })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
-      // eslint-disable-next-line consistent-return
       .end((err, res) => {
-        if (err) return done(err);
+        // if (err) return done(err);
         res.status.should.equal(200);
+        res.body.message.should.equal('Record saved');
         done();
       });
   });
 
   after((done) => {
+    mongoose.connection.close();
     app.server.close(done());
   });
 });
