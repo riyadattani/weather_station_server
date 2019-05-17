@@ -1,3 +1,10 @@
 language: node_js
 node_js:
-  - "12"
+- '12'
+deploy:
+  provider: heroku
+  api_key:
+    secure: NzRCy46ueqnCFfUZeYn3smQ0CZ/WGSPOOOYqzPD7+h6H26HgZuiCioF28hfpmC1CrUZD4I8H6alk6RASUzc3ljRSMCxF8oiDRSeAUZ/a1TZb0ajXtkitWSFUqbHlHdvELzAcMZDtoKiPE+ZuPoozYkKz/GbEx7I0XTYmEz1E6d7FRrp1U7RCvakL2SUo03dzAt1GQc5x0bpW3UD4vbx2+bj/Z8iTw+LS2ZO+PP4vnrqjPanpiC3nMK0vQDO5t9PzSq+IpHqYD8MlJKSaNkj7ZN1F7WADkvMg8leq3kejOKmfyaAJlDptVRtGLdLBhd6N1iNbqNIpRjSV3QiAGunDomBHAYWUFG4DdgtV/8r3Ih9hH0tcjZ4gG1O6qQU1eLFlxCrs0gAHu+9XbKet4y1a92ll3uD9XVvo6E9rlj/EIPnNPOhtoYbTii5L1HaSMh6erRKVuCrodCejSdS6uRgil2OGqrlPh9HI2bVoKUGVxJZj7HBK2QZhZKjdz0tfwRBzl0OngpiqNnBaNtcv8rmkJZ3+0kNtguMpju5UaCpfCbulD7WMemvBlxP921PBfIzdoLFzIzaGgKghHx4/NAuSSR0o2n7748nu27JHAk16SpvYKDJk4dYOGXwAxGHZ5/mtqI4aGbWIg7pm7sZnmCKbHBG8JYjN7qhw4k1xzCnyS4A=
+  app: quiet-everglades-27917
+  on:
+    repo: riyadattani/weather_station_server
