@@ -26,9 +26,9 @@ app.post('/api/data', (req, res) => {
   const weatherRecord = new WeatherRecord(req.body);
   weatherRecord.save((err) => {
     if (err) {
-      // console.log(err.errors);
       res.send({
         message: 'Record was not saved',
+        mongoResponse: err,
       });
     } else {
       res.send({

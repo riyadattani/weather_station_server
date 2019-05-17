@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 const should = require('should');
 // const sinon = require('sinon');
 const request = require('supertest');
@@ -42,7 +43,6 @@ describe('Testing the api route', () => {
     agent.post('/api/data')
       .send({
         temperature: 'a string',
-        humidity: 'another string',
       })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
@@ -51,6 +51,23 @@ describe('Testing the api route', () => {
         // if (err) return done(err);
         res.status.should.equal(200);
         res.body.message.should.equal('Record was not saved');
+        done();
+      });
+  });
+
+  it("response include the Mongo error if it couldn't save", (done) => {
+    agent.post('/api/data')
+      .send({
+        temperature: 'a string',
+        humidity: 'asdasd',
+      })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        // if (err) return done(err);
+        res.body.mongoResponse.errors.temperature.message
+          .should.equal('Cast to Number failed for value "a string" at path "temperature"');
         done();
       });
   });
