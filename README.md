@@ -18,3 +18,6 @@ Testing the api route:
 - saves the data in the database for a legit input
 - returns an error message if it doesn't validate
 - doesn't save the data in the database if it doesn't validate
+
+Connect to mongo production database:
+mongo "mongodb+srv://weather-station-server-zrxmz.mongodb.net/test" --username weather-station-master
