@@ -101,7 +101,7 @@ describe('Testing the api route', () => {
       });
   });
 
-  it('missing data in record will not be saved and return message', (done) => {
+  it("returns an error message if it doesn't validate", (done) => {
     agent.post('/api/data')
       .send({ })
       .set('Accept', 'application/json')
@@ -113,6 +113,28 @@ describe('Testing the api route', () => {
       });
   });
 
+  it("doesn't save the data in the database if it doesn't validate", (done) => {
+    agent.post('/api/data')
+      .send({
+        humidity: 67,
+        pressure: 100,
+        date: 1, // = 2019/5/16
+      })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end(() => {
+        WeatherRecord.find({ date: 1 }, (err, weatherRecord) => {
+          weatherRecord.should.be.empty();
+          done();
+        });
+      });
+  });
+
+  afterEach((done) => {
+    WeatherRecord.deleteMany({}).exec();
+    done();
+  });
 
   after((done) => {
     mongoose.connection.close();
