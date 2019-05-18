@@ -4,10 +4,22 @@ const { Schema } = mongoose;
 
 const weatherDataModel = new Schema(
   {
-    temperature: { type: Number },
-    humidity: { type: Number },
-    pressure: { type: Number },
-    date: { type: Date },
+    temperature: {
+      type: Number,
+      required: true,
+    },
+    humidity: {
+      type: Number,
+      required: true,
+    },
+    pressure: {
+      type: Number,
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
   },
 );
 

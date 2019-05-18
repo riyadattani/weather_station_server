@@ -29,7 +29,12 @@ describe('Testing "/" Route', () => {
 describe('Testing the api route', () => {
   it('returns a confirmation message', (done) => {
     agent.post('/api/data')
-      .send({ temperature: 20 })
+      .send({
+        temperature: 20,
+        humidity: 50,
+        pressure: 1000,
+        date: 1560643200000, // = 2019/5/16
+      })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
@@ -80,18 +85,31 @@ describe('Testing the api route', () => {
         temperature: 32,
         humidity: 67,
         pressure: 100,
-        date: 1560643200000 // = 2019/5/16
+        date: 1560643200000, // = 2019/5/16
       })
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
+        // eslint-disable-next-line no-underscore-dangle
         const id = res.body.record._id;
 
         WeatherRecord.findById(id, (err, weatherRecord) => {
-          weatherRecord.temperature.should.equal(32)
+          weatherRecord.temperature.should.equal(32);
           done();
         });
+      });
+  });
+
+  it('missing data in record will not be saved and return message', (done) => {
+    agent.post('/api/data')
+      .send({ })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        res.body.message.should.equal('Record was not saved');
+        done();
       });
   });
 

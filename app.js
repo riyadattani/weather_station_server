@@ -8,7 +8,7 @@ if (process.env.ENV === 'Test') {
   console.log('This is a test');
   mongoose.connect('mongodb://localhost/weather-data-test');
 } else {
-  console.log('This is 4 real');
+  console.log('This is the real database');
   mongoose.connect('mongodb://localhost/weather-data-dev');
 }
 
@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 app.post('/api/data', (req, res) => {
   const weatherRecord = new WeatherRecord(req.body);
   weatherRecord.save((err) => {
+    // console.log(err);
     if (err) {
       res.send({
         message: 'Record was not saved',
