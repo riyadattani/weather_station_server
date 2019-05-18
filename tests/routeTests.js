@@ -94,7 +94,7 @@ describe('Testing the api route', () => {
         // eslint-disable-next-line no-underscore-dangle
         const id = res.body.record._id;
 
-        WeatherRecord.findById(id, (err, weatherRecord) => {
+        WeatherRecord.findById(id, (err2, weatherRecord) => {
           weatherRecord.temperature.should.equal(32);
           done();
         });

@@ -20,4 +20,8 @@ Testing the api route:
 - doesn't save the data in the database if it doesn't validate
 
 Connect to mongo production database:
+```script
 mongo "mongodb+srv://weather-station-server-zrxmz.mongodb.net/test" --username weather-station-master
+```
+
+Ask Paul for the password!
