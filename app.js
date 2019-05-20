@@ -23,15 +23,19 @@ app.get('/', (req, res) => {
   res.send('Hello from [placeholder]');
 });
 
-app.all('/api/data', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+app.all('/api/data', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With');
   next();
 });
 
 app.get('/api/data', (req, res) => {
-  const query = req.query;
-  WeatherRecord.find().where('date').gt(query.initial_datetime)
+  const { query } = req;
+  query.initial_datetime = query.initial_datetime
+                           || new Date(new Date().getTime() - 86400000); // 24 hours ago
+
+  WeatherRecord.find()
+    .where('date').gt(query.initial_datetime)
     .exec((err, weatherData) => {
       res.send(weatherData);
     });

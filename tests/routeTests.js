@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 const should = require('should');
-// const sinon = require('sinon');
+const sinon = require('sinon');
 const request = require('supertest');
 const mongoose = require('mongoose');
 
@@ -13,8 +13,7 @@ const agent = request.agent(app);
 const WeatherRecord = require('../models/weatherDataModel');
 
 describe('Testing the api route', () => {
-
-  describe('Homepage tests', function(){
+  describe('Homepage tests', () => {
     it('"/" route exists', (done) => {
       agent.get('/')
         .end((err, res) => {
@@ -130,8 +129,8 @@ describe('Testing the api route', () => {
     });
   });
 
-  describe('GET route tests', function() {
-    it('returns the posted data', function(done) {
+  describe('GET route tests', () => {
+    it('returns the posted data', (done) => {
       const getWeatherRecord = new WeatherRecord({
         temperature: 32,
         humidity: 67,
@@ -139,7 +138,7 @@ describe('Testing the api route', () => {
         date: 1560643200000, // = 2019/5/16
       });
 
-      getWeatherRecord.save(function() {
+      getWeatherRecord.save(() => {
         agent.get('/api/data')
           .end((err, res) => {
             res.status.should.equal(200);
@@ -148,7 +147,7 @@ describe('Testing the api route', () => {
       });
     });
 
-    it('returns an empty response if database is empty', function(done) {
+    it('returns an empty response if database is empty', (done) => {
       agent.get('/api/data')
         .end((err, res) => {
           res.body.should.be.empty();
@@ -156,17 +155,17 @@ describe('Testing the api route', () => {
         });
     });
 
-    describe('Filtering by date', function(){
-      describe('Initial datetime', function() {
-        it("it doesn't return data from before the 'initial_datetime' parameter", function(done) {
+    describe('Filtering by date', () => {
+      describe('Initial datetime', () => {
+        it("it doesn't return data from before the 'initial_datetime' parameter", (done) => {
           const getWeatherRecord = new WeatherRecord({
             temperature: 32,
             humidity: 67,
             pressure: 100,
-            date: '2019-05-19T14:30:00.000Z'
+            date: '2019-05-19T14:30:00.000Z',
           });
-    
-          getWeatherRecord.save(function() {
+
+          getWeatherRecord.save(() => {
             agent.get('/api/data?initial_datetime=2019-05-19T14:31:00.000Z')
               .end((err, res) => {
                 res.body.should.be.empty();
@@ -174,27 +173,57 @@ describe('Testing the api route', () => {
               });
           });
         });
-  
-        it("it does return data from after the 'initial_datetime' parameter", function(done) {
-          const getWeatherRecord = new WeatherRecord({
+
+        it("it does return data from after the 'initial_datetime' parameter", (done) => {
+          const weatherRecord = new WeatherRecord({
             temperature: 32,
             humidity: 67,
             pressure: 100,
-            date: '2019-05-19T14:30:00.000Z'
+            date: '2019-05-19T14:30:00.000Z',
           });
-    
-          getWeatherRecord.save(function() {
+
+          weatherRecord.save(() => {
             agent.get('/api/data?initial_datetime=2019-05-19T14:29:00.000Z')
-            .end((err, res) => {
+              .end((err, res) => {
                 res.body.should.not.be.empty();
                 done();
               });
           });
         });
+
+        describe('(meaningless describe block to create a scope)', function () {
+          this.clock = sinon.useFakeTimers(new Date('2019-05-19T14:30:00.000Z'));
+
+          it("if no 'initial_datetime' parameter then default to 24 hours ago", (done) => {
+            WeatherRecord.create([
+              {
+                temperature: 32,
+                humidity: 67,
+                pressure: 100,
+                date: '2019-05-18T14:20:00.000Z',
+              },
+              {
+                temperature: 32,
+                humidity: 67,
+                pressure: 100,
+                date: '2019-05-18T14:40:00.000Z',
+              },
+            ], () => {
+              agent.get('/api/data')
+                .end((err, res) => {
+                  res.body.length.should.equal(1);
+                  done();
+                });
+            });
+          });
+
+          after((done) => {
+            this.clock.restore();
+            done();
+          });
+        });
       });
-
     });
-
   });
 
 
