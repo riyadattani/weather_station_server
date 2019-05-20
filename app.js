@@ -21,15 +21,19 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-app.get('/api/data', (req, res) => {
-  WeatherRecord.find((err, weatherData) => {
+app.get('/', function(req, res) {
+  res.send('Hello from [placeholder]');
+});
+
+app.get('/api/data', function(req, res) {
+  WeatherRecord.find(function(err, weatherData) {
     res.send(weatherData);
   });
 });
 
-app.post('/api/data', (req, res) => {
+app.post('/api/data', function(req, res) {
   const weatherRecord = new WeatherRecord(req.body);
-  weatherRecord.save((err) => {
+  weatherRecord.save(function(err) {
     if (err) {
       res.send({
         message: 'Record was not saved',
@@ -45,7 +49,7 @@ app.post('/api/data', (req, res) => {
 });
 
 
-app.server = app.listen(port, () => {
+app.server = app.listen(port, function() {
   console.log(`Running on port ${port}`);
 });
 

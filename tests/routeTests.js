@@ -121,6 +121,14 @@ describe('Testing the api route', function() {
   })
 
   describe('GET route tests', function(){
+    it ('Testing "/" Route', function(done){
+      agent.get('/')
+      .end(function(err, res){
+        res.status.should.equal(200);
+        done();
+      });
+    });
+
     it('returns the posted data', function(done) {
       getWeatherRecord = new WeatherRecord({
         temperature: 32,
