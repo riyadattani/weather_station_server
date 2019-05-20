@@ -5,14 +5,11 @@ const mongoose = require('mongoose');
 const app = express();
 
 if (process.env.ENV === 'Test') {
-  console.log('This is a test');
-  mongoose.connect('mongodb://localhost/weather-data-test');
+  mongoose.connect('mongodb://localhost/weather-data-test', { useNewUrlParser: true });
 } else if (process.env.MONGODB_URI) {
-  console.log('This is Heroku');
-  mongoose.connect(process.env.MONGODB_URI);
+  mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 } else {
-  console.log('This is the development database');
-  mongoose.connect('mongodb://localhost/weather-data-dev');
+  mongoose.connect('mongodb://localhost/weather-data-dev', { useNewUrlParser: true });
 }
 
 const WeatherRecord = require('./models/weatherDataModel');
@@ -44,7 +41,9 @@ app.post('/api/data', (req, res) => {
 
 
 app.server = app.listen(port, () => {
-  console.log(`Running on port ${port}`);
+  if (process.env.ENV !== 'Test' && !process.env.MONGODB_URI) {
+    console.log(`Running on port ${port}`);
+  }
 });
 
 module.exports = app;
