@@ -5,24 +5,27 @@ const mongoose = require('mongoose');
 const app = express();
 
 if (process.env.ENV === 'Test') {
-  console.log('This is a test');
-  mongoose.connect('mongodb://localhost/weather-data-test');
+  mongoose.connect('mongodb://localhost/weather-data-test', { useNewUrlParser: true });
 } else if (process.env.MONGODB_URI) {
-  console.log('This is Heroku');
   mongoose.connect(process.env.MONGODB_URI);
 } else {
-  console.log('This is the development database');
-  mongoose.connect('mongodb://localhost/weather-data-dev');
+  mongoose.connect('mongodb://localhost/weather-data-dev', { useNewUrlParser: true });
 }
 
-const WeatherRecord = require('./models/weatherDataModel');
+const WeatherRecord = require('./models/weatherDataModel', { useNewUrlParser: true });
 
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.send('Hello from Placeholder');
+  res.send('Hello from [placeholder]');
+});
+
+app.get('/api/data', (req, res) => {
+  WeatherRecord.find((err, weatherData) => {
+    res.send(weatherData);
+  });
 });
 
 app.post('/api/data', (req, res) => {
@@ -44,7 +47,9 @@ app.post('/api/data', (req, res) => {
 
 
 app.server = app.listen(port, () => {
-  console.log(`Running on port ${port}`);
+  if (process.env.Env !== 'Test' && !process.env.MONGODB_URI) {
+    console.log(`Running on port ${port}`);
+  }
 });
 
 module.exports = app;
