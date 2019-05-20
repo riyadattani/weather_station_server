@@ -12,8 +12,8 @@ const agent = request.agent(app);
 
 const WeatherRecord = require('../models/weatherDataModel');
 
-describe('Testing the api route', function() {
-  describe('POST route tests', function(){
+describe('Testing the api route', () => {
+  describe('POST route tests', () => {
     it('returns a confirmation message', (done) => {
       agent.post('/api/data')
         .send({
@@ -117,27 +117,26 @@ describe('Testing the api route', function() {
           });
         });
     });
+  });
 
-  })
-
-  describe('GET route tests', function(){
-    it ('Testing "/" Route', function(done){
+  describe('GET route tests', () => {
+    it('Testing "/" Route', (done) => {
       agent.get('/')
-      .end(function(err, res){
-        res.status.should.equal(200);
-        done();
-      });
+        .end((err, res) => {
+          res.status.should.equal(200);
+          done();
+        });
     });
 
-    it('returns the posted data', function(done) {
-      getWeatherRecord = new WeatherRecord({
+    it('returns the posted data', (done) => {
+      const getWeatherRecord = new WeatherRecord({
         temperature: 32,
         humidity: 67,
         pressure: 100,
         date: 1560643200000, // = 2019/5/16
       });
 
-      getWeatherRecord.save(function(){
+      getWeatherRecord.save(() => {
         agent.get('/api/data')
           .end((err, res) => {
             res.status.should.equal(200);
@@ -146,12 +145,12 @@ describe('Testing the api route', function() {
       });
     });
 
-    it ('returns an empty response if database is empty', function(done){
+    it('returns an empty response if database is empty', (done) => {
       agent.get('/api/data')
-      .end(function(err, res){
-        res.body.should.be.empty();
-        done();
-      });
+        .end((err, res) => {
+          res.body.should.be.empty();
+          done();
+        });
     });
   });
 

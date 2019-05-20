@@ -6,8 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "start": "nodemon app.js",
-    "test": "mocha tests/**/*Tests.js",
-    "coverage": "nyc npm run test"
+    "test": "nyc mocha tests/**/*Tests.js"
   },
   "repository": {
     "type": "git",
