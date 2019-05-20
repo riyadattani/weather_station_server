@@ -21,8 +21,17 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello from Placeholder');
+app.get('/api/data', (req, res) => {
+  WeatherRecord.find((err, weatherData) => {
+    // if (err) {
+    //   res.send({
+    //     message: 'Record was not retrieved',
+    //     mongoResponse: err,
+    //   });
+    // } else {
+      res.send(weatherData);
+    // }
+  });
 });
 
 app.post('/api/data', (req, res) => {
