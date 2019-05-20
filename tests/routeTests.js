@@ -13,6 +13,17 @@ const agent = request.agent(app);
 const WeatherRecord = require('../models/weatherDataModel');
 
 describe('Testing the api route', () => {
+
+  describe('Homepage tests', function(){
+    it('"/" route exists', (done) => {
+      agent.get('/')
+        .end((err, res) => {
+          res.status.should.equal(200);
+          done();
+        });
+    });
+  });
+
   describe('POST route tests', () => {
     it('returns a confirmation message', (done) => {
       agent.post('/api/data')
@@ -119,16 +130,8 @@ describe('Testing the api route', () => {
     });
   });
 
-  describe('GET route tests', () => {
-    it('Testing "/" Route', (done) => {
-      agent.get('/')
-        .end((err, res) => {
-          res.status.should.equal(200);
-          done();
-        });
-    });
-
-    it('returns the posted data', (done) => {
+  describe('GET route tests', function() {
+    it('returns the posted data', function(done) {
       const getWeatherRecord = new WeatherRecord({
         temperature: 32,
         humidity: 67,
@@ -136,7 +139,7 @@ describe('Testing the api route', () => {
         date: 1560643200000, // = 2019/5/16
       });
 
-      getWeatherRecord.save(() => {
+      getWeatherRecord.save(function() {
         agent.get('/api/data')
           .end((err, res) => {
             res.status.should.equal(200);
@@ -145,13 +148,53 @@ describe('Testing the api route', () => {
       });
     });
 
-    it('returns an empty response if database is empty', (done) => {
+    it('returns an empty response if database is empty', function(done) {
       agent.get('/api/data')
         .end((err, res) => {
           res.body.should.be.empty();
           done();
         });
     });
+
+    describe('Filtering by date', function(){
+      describe('Initial datetime', function() {
+        it("it doesn't return data from before the 'initial_datetime' parameter", function(done) {
+          const getWeatherRecord = new WeatherRecord({
+            temperature: 32,
+            humidity: 67,
+            pressure: 100,
+            date: '2019-05-19T14:30:00.000Z'
+          });
+    
+          getWeatherRecord.save(function() {
+            agent.get('/api/data?initial_datetime=2019-05-19T14:31:00.000Z')
+              .end((err, res) => {
+                res.body.should.be.empty();
+                done();
+              });
+          });
+        });
+  
+        it("it does return data from after the 'initial_datetime' parameter", function(done) {
+          const getWeatherRecord = new WeatherRecord({
+            temperature: 32,
+            humidity: 67,
+            pressure: 100,
+            date: '2019-05-19T14:30:00.000Z'
+          });
+    
+          getWeatherRecord.save(function() {
+            agent.get('/api/data?initial_datetime=2019-05-19T14:29:00.000Z')
+            .end((err, res) => {
+                res.body.should.not.be.empty();
+                done();
+              });
+          });
+        });
+      });
+
+    });
+
   });
 
 

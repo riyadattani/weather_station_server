@@ -30,9 +30,11 @@ app.all('/api/data', function(req, res, next) {
 });
 
 app.get('/api/data', (req, res) => {
-  WeatherRecord.find((err, weatherData) => {
-    res.send(weatherData);
-  });
+  const query = req.query;
+  WeatherRecord.find().where('date').gt(query.initial_datetime)
+    .exec((err, weatherData) => {
+      res.send(weatherData);
+    });
 });
 
 app.post('/api/data', (req, res) => {
