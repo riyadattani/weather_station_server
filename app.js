@@ -23,14 +23,7 @@ app.use(bodyParser.json());
 
 app.get('/api/data', (req, res) => {
   WeatherRecord.find((err, weatherData) => {
-    // if (err) {
-    //   res.send({
-    //     message: 'Record was not retrieved',
-    //     mongoResponse: err,
-    //   });
-    // } else {
-      res.send(weatherData);
-    // }
+    res.send(weatherData);
   });
 });
 

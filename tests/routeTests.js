@@ -13,7 +13,7 @@ const agent = request.agent(app);
 const WeatherRecord = require('../models/weatherDataModel');
 
 describe('Testing the api route', function() {
-  describe('POST route stuff', function(){
+  describe('POST route tests', function(){
     it('returns a confirmation message', (done) => {
       agent.post('/api/data')
         .send({
@@ -120,7 +120,7 @@ describe('Testing the api route', function() {
 
   })
 
-  describe('GET route stuff', function(){
+  describe('GET route tests', function(){
     it('returns the posted data', function(done) {
       getWeatherRecord = new WeatherRecord({
         temperature: 32,
@@ -137,7 +137,15 @@ describe('Testing the api route', function() {
           });
       });
     });
-  })
+
+    it ('returns an empty response if database is empty', function(done){
+      agent.get('/api/data')
+      .end(function(err, res){
+        res.body.should.be.empty();
+        done();
+      });
+    });
+  });
 
 
   afterEach((done) => {
