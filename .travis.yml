@@ -22,3 +22,5 @@ deploy:
   app: quiet-everglades-27917
   on:
     repo: riyadattani/weather_station_server
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
