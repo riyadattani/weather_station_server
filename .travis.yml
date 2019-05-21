@@ -1,9 +1,9 @@
 env:
   global:
-    - CC_TEST_REPORTER_ID=72295fd3e6b83161806ae162035aa45edd44d6c9db4422e72ebc9a1a123924a3
+    - CC_TEST_REPORTER_ID=309680a1bbe49910b38bf8c5a4c4bd08c7977deabe00c4b516f91c9ca099edcc
 language: node_js
 node_js:
-  - '12'
+  - stable
 services:
   - mongodb
 before_script:
@@ -12,8 +12,6 @@ before_script:
   - ./cc-test-reporter before-build
 script:
   - npm test
-after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 deploy:
   provider: heroku
   api_key:
@@ -21,3 +19,5 @@ deploy:
   app: quiet-everglades-27917
   on:
     repo: riyadattani/weather_station_server
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
