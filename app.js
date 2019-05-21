@@ -31,11 +31,15 @@ app.all('/api/data', (req, res, next) => {
 
 app.get('/api/data', (req, res) => {
   const { query } = req;
+  query.final_datetime = query.final_datetime
+                         || new Date(new Date().getTime());
   query.initial_datetime = query.initial_datetime
-                           || new Date(new Date().getTime() - 86400000); // 24 hours ago
+                           || new Date(new Date(query.final_datetime) - 86400000); // 24 hours ago
 
   WeatherRecord.find()
     .where('date').gt(query.initial_datetime)
+    .where('date')
+    .lt(query.final_datetime)
     .exec((err, weatherData) => {
       res.send(weatherData);
     });
