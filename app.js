@@ -20,7 +20,10 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.send('Hello from [placeholder]');
+  const dateNow = (new Date()).toISOString();
+
+  res.send('Hello from [placeholder]\n' + `<a href="https://quiet-everglades-27917.herokuapp.com/api/data?final_datetime=${dateNow}">Test the api</a>`);
+  // res.send('https://quiet-everglades-27917.herokuapp.com/api/data');
 });
 
 app.all('/api/data', (req, res, next) => {
@@ -38,8 +41,7 @@ app.get('/api/data', (req, res) => {
 
   WeatherRecord.find()
     .where('date').gt(query.initial_datetime)
-    .where('date')
-    .lt(query.final_datetime)
+    .where('date').lt(query.final_datetime)
     .exec((err, weatherData) => {
       res.send(weatherData);
     });

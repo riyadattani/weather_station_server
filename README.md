@@ -1,6 +1,8 @@
 # Weather station server app
 
-<https://quiet-everglades-27917.herokuapp.com/>
+[Weather Station API](<https://quiet-everglades-27917.herokuapp.com/>)
+
+[![Maintainability](https://api.codeclimate.com/v1/badges/7731de9002d267973f9e/maintainability)](https://codeclimate.com/github/riyadattani/weather_station_server/maintainability)
 
 A simple Node.js/Express app receiving data from a Raspberry Pi weather station and making it available via API to a separate dashboard app.
 
