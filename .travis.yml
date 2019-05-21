@@ -1,8 +1,19 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=72295fd3e6b83161806ae162035aa45edd44d6c9db4422e72ebc9a1a123924a3
 language: node_js
 node_js:
   - '12'
 services:
   - mongodb
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script:
+  - npm test
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 deploy:
   provider: heroku
   api_key:
