@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 const should = require('should');
-// const sinon = require('sinon');
+const sinon = require('sinon');
 const request = require('supertest');
 const mongoose = require('mongoose');
 
@@ -13,6 +13,16 @@ const agent = request.agent(app);
 const WeatherRecord = require('../models/weatherDataModel');
 
 describe('Testing the api route', () => {
+  describe('Homepage tests', () => {
+    it('"/" route exists', (done) => {
+      agent.get('/')
+        .end((err, res) => {
+          res.status.should.equal(200);
+          done();
+        });
+    });
+  });
+
   describe('POST route tests', () => {
     it('returns a confirmation message', (done) => {
       agent.post('/api/data')
@@ -120,14 +130,6 @@ describe('Testing the api route', () => {
   });
 
   describe('GET route tests', () => {
-    it('Testing "/" Route', (done) => {
-      agent.get('/')
-        .end((err, res) => {
-          res.status.should.equal(200);
-          done();
-        });
-    });
-
     it('returns the posted data', (done) => {
       const getWeatherRecord = new WeatherRecord({
         temperature: 32,
@@ -151,6 +153,203 @@ describe('Testing the api route', () => {
           res.body.should.be.empty();
           done();
         });
+    });
+
+    describe('Filtering by date', () => {
+      this.clock = sinon.useFakeTimers(new Date('2019-05-19T14:30:00.000Z'));
+
+      describe('No initial datetime and no final datetime provided', () => {
+        it('Initial datetime defaults to 24 hours ago', (done) => {
+          WeatherRecord.create([
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-18T14:29:00.000Z',
+            },
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-18T14:31:00.000Z',
+            },
+          ], () => {
+            agent.get('/api/data')
+              .end((err, res) => {
+                res.body.length.should.equal(1);
+                done();
+              });
+          });
+        });
+        it('Final datetime defaults to now', (done) => {
+          WeatherRecord.create([
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-19T14:29:00.000Z',
+            },
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-19T14:31:00.000Z',
+            },
+          ], () => {
+            agent.get('/api/data')
+              .end((err, res) => {
+                res.body.length.should.equal(1);
+                done();
+              });
+          });
+        });
+      });
+
+      describe('Initial datetime and final datetime provided', () => {
+        it('Use provided initial datetime', (done) => {
+          WeatherRecord.create([
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-17T14:31:00.000Z',
+            },
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-17T14:29:00.000Z',
+            },
+          ], () => {
+            agent.get('/api/data?initial_datetime=2019-05-17T14:30:00.000Z&final_datetime=2019-05-18T14:30:00.000Z')
+              .end((err, res) => {
+                res.body.length.should.equal(1);
+                done();
+              });
+          });
+        });
+        it('Use provided final datetime', (done) => {
+          WeatherRecord.create([
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-18T14:31:00.000Z',
+            },
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-18T14:29:00.000Z',
+            },
+          ], () => {
+            agent.get('/api/data?initial_datetime=2019-05-17T14:30:00.000Z&final_datetime=2019-05-18T14:30:00.000Z')
+              .end((err, res) => {
+                res.body.length.should.equal(1);
+                done();
+              });
+          });
+        });
+      });
+
+      describe('No initial datetime provided but final datetime provided', () => {
+        it('Initial datetime defaults to 24 hours before final datetime', (done) => {
+          WeatherRecord.create([
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-17T14:31:00.000Z',
+            },
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-17T14:29:00.000Z',
+            },
+          ], () => {
+            agent.get('/api/data?final_datetime=2019-05-18T14:30:00.000Z')
+              .end((err, res) => {
+                res.body.length.should.equal(1);
+                done();
+              });
+          });
+        });
+        it('Use provided final datetime', (done) => {
+          WeatherRecord.create([
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-18T14:31:00.000Z',
+            },
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-18T14:29:00.000Z',
+            },
+          ], () => {
+            agent.get('/api/data?final_datetime=2019-05-18T14:30:00.000Z')
+              .end((err, res) => {
+                res.body.length.should.equal(1);
+                done();
+              });
+          });
+        });
+      });
+
+      describe('Initial datetime provided but no final datetime provided', () => {
+        it('Use provided initial datetime', (done) => {
+          WeatherRecord.create([
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-17T14:31:00.000Z',
+            },
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-17T14:29:00.000Z',
+            },
+          ], () => {
+            agent.get('/api/data?initial_datetime=2019-05-17T14:30:00.000Z')
+              .end((err, res) => {
+                res.body.length.should.equal(1);
+                done();
+              });
+          });
+        });
+        it('Final datetime defaults to now', (done) => {
+          WeatherRecord.create([
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-19T14:31:00.000Z',
+            },
+            {
+              temperature: 32,
+              humidity: 67,
+              pressure: 100,
+              date: '2019-05-19T14:29:00.000Z',
+            },
+          ], () => {
+            agent.get('/api/data?initial_datetime=2019-05-17T14:30:00.000Z')
+              .end((err, res) => {
+                res.body.length.should.equal(1);
+                done();
+              });
+          });
+        });
+      });
+
+      after((done) => {
+        this.clock.restore();
+        done();
+      });
     });
   });
 

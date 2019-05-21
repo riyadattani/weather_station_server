@@ -23,16 +23,26 @@ app.get('/', (req, res) => {
   res.send('Hello from [placeholder]');
 });
 
-app.all('/api/data', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+app.all('/api/data', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With');
   next();
 });
 
 app.get('/api/data', (req, res) => {
-  WeatherRecord.find((err, weatherData) => {
-    res.send(weatherData);
-  });
+  const { query } = req;
+  query.final_datetime = query.final_datetime
+                         || new Date(new Date().getTime());
+  query.initial_datetime = query.initial_datetime
+                           || new Date(new Date(query.final_datetime) - 86400000); // 24 hours ago
+
+  WeatherRecord.find()
+    .where('date').gt(query.initial_datetime)
+    .where('date')
+    .lt(query.final_datetime)
+    .exec((err, weatherData) => {
+      res.send(weatherData);
+    });
 });
 
 app.post('/api/data', (req, res) => {
